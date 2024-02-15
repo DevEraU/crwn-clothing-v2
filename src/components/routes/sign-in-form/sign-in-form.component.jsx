@@ -1,51 +1,57 @@
-import { useState } from "react";
-import FormInput from "../../form-input/form-input.component";
-import Button from "../../button/button.component";
-import "./sign-in-form.styles.scss";
+import { useState } from 'react'
+import FormInput from '../../form-input/form-input.component'
+import Button from '../../button/button.component'
+//import { UserContext } from '../../../contexts/user.context'
 import {
   signInWithGooglePopup,
   createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
-} from "../../../utils/firebase/firebase.utils";
+  signInWithGoogleRedirect,
+} from '../../../utils/firebase/firebase.utils'
+import './sign-in-form.styles.scss'
+import { getRedirectResult } from 'firebase/auth'
 
 const defaultFormFields = {
-  email: "",
-  password: "",
-};
+  email: '',
+  password: '',
+}
 
 const SignInForm = () => {
-  const [formFields, setFormFields] = useState(defaultFormFields);
-  const { email, password } = formFields;
+  const [formFields, setFormFields] = useState(defaultFormFields)
+  const { email, password } = formFields
+
+  //const { setCurrentUser } = useContext(UserContext) centralited this in our context
 
   const resetFormFields = () => {
-    setFormFields(defaultFormFields);
-  };
+    setFormFields(defaultFormFields)
+  }
 
   const signInWithGoogle = async () => {
-    const { user } = await signInWithGooglePopup();
-    await createUserDocumentFromAuth(user);
-  };
+    await signInWithGooglePopup()
+  }
+
+  const logGoogleRedirect = async () => {
+    const { user } = await signInWithGoogleRedirect()
+  }
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      const response = await signInAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
-      resetFormFields();
+      const { user } = await signInAuthUserWithEmailAndPassword(email, password)
+      //setCurrentUser(user) centralited this in our context
+      resetFormFields()
     } catch (error) {
-      if (error.code === "auth/invalid-credential") {
-        alert("Invalid credebtial:Please double-check Email/Pssword");
+      if (error.code === 'auth/invalid-credential') {
+        alert('Invalid credebtial:Please double-check Email/Pssword')
       }
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormFields({ ...formFields, [name]: value });
-  };
+    const { name, value } = event.target
+    setFormFields({ ...formFields, [name]: value })
+  }
 
   return (
     <div className="sign-in-container">
@@ -76,7 +82,7 @@ const SignInForm = () => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default SignInForm;
+export default SignInForm
